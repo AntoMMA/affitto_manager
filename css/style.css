@@ -1,0 +1,364 @@
+/* ===========================
+   BASE
+=========================== */
+
+body.dark {
+  margin: 0;
+  background: radial-gradient(circle at top left, #0e0e10, #050507 70%);
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+/* ===========================
+   BACKGROUND BLUR DECORATIVO
+=========================== */
+
+.background-blur {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,0,255,0.15), transparent),
+    radial-gradient(circle at 70% 70%, rgba(0,255,255,0.15), transparent);
+  filter: blur(100px);
+  z-index: -1;
+}
+
+/* ===========================
+   LOGIN
+=========================== */
+
+.login-container {
+  backdrop-filter: blur(20px);
+  background: rgba(20,20,25,0.8);
+  border: 1px solid rgba(0,255,255,0.3);
+  padding: 40px;
+  border-radius: 16px;
+  width: 350px;
+  box-shadow: 0 0 25px rgba(0,255,255,0.2);
+  text-align: center;
+  margin: 100px auto;
+}
+
+/* ===========================
+   INPUT & SELECT
+=========================== */
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: #1c1c22;
+  color: white;
+  transition: 0.3s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: cyan;
+  box-shadow: 0 0 12px rgba(0,255,255,0.5);
+}
+
+/* ===========================
+   BUTTON RGB PROFESSIONALE
+=========================== */
+
+button {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1;
+  transition: 0.3s ease;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+  background-size: 400%;
+  animation: rgbMove 10s linear infinite;
+  z-index: -1;
+  opacity: 0.85;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0,255,255,0.3);
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(15,15,20,0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.navbar-inner {
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+  background-size: 400%;
+  animation: rgbMove 8s linear infinite;
+}
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container {
+  padding: 100px 20px 40px 20px;
+  display: grid;
+  gap: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===========================
+   CARD
+=========================== */
+
+.card {
+  position: relative;
+  background: rgba(20,20,25,0.9);
+  padding: 30px;
+  border-radius: 40px;
+  border: 1px solid rgba(0,183,255,0.15);
+  box-shadow: 0 0 20px rgba(0,255,255,0.05);
+  transition: 0.4s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 0 35px rgba(0,255,255,0.15);
+}
+
+/* RGB BORDER SOLO DECORATIVO */
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  padding: 1px;
+  background: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+  background-size: 400%;
+  animation: rgbMove 12s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ===========================
+   STATUS COLORS
+=========================== */
+
+.green  { background-color: rgba(0,255,0,0.15); }
+.red    { background-color: rgba(255,0,0,0.15); }
+.orange { background-color: rgba(255,165,0,0.15); }
+
+/* ===========================
+   IMMAGINI
+=========================== */
+
+img {
+  max-width: 200px;
+  margin: 10px;
+}
+
+.card-body img {
+  max-width: 150px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+/* ===========================
+   COLLAPSIBLE
+=========================== */
+
+.collapsible .card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.collapsible.active .card-body {
+  max-height: 2500px;
+  opacity: 1;
+  margin-top: 15px;
+}
+
+.card-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header::after {
+  content: "▼";
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.collapsible.active .card-header::after {
+  transform: rotate(180deg);
+}
+
+.card-header:hover {
+  color: cyan;
+}
+
+/* ===========================
+   PAGAMENTI SCROLL
+=========================== */
+
+.pagamenti-body {
+  max-height: 450px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.pagamenti-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pagamenti-body::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+
+.pagamenti-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+  background-size: 400%;
+  animation: rgbMove 8s linear infinite;
+  border-radius: 10px;
+}
+
+/* ===========================
+   CONTRACT SETTINGS
+=========================== */
+
+.contract-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.contract-body input {
+  max-width: 900px;
+}
+
+.contract-body button {
+  max-width: 400px;
+}
+
+/* ===========================
+   BADGE
+=========================== */
+
+#contractBadge {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.badge-urgent {
+  animation: pulseUrgent 1s infinite;
+}
+
+.badge-expired {
+  text-shadow: 0 0 10px red;
+}
+
+@keyframes pulseUrgent {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ===========================
+   CHART CARD
+=========================== */
+
+.chart-card {
+  background: linear-gradient(145deg, #111, #1a1a1a);
+  border: 1px solid #222;
+  box-shadow: 0 0 30px rgba(0,255,200,0.08);
+}
+
+.chart-wrapper {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===========================
+   RGB ANIMATION KEYFRAMES
+=========================== */
+
+@keyframes rgbMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 400% 50%; }
+}
+
+/* ===========================
+   NAVBAR ACTIONS
+=========================== */
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Pulsante PDF elegante */
+
+.pdf-btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+/* Glow leggermente più intenso per il PDF */
+
+.pdf-btn:hover {
+  box-shadow: 0 0 25px rgba(0,255,255,0.6);
+}
