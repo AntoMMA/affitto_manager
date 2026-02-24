@@ -1,13 +1,26 @@
 import { auth } from './firebase.js';
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const provider = new GoogleAuthProvider();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+  // 🔥 Gestione ritorno da redirect (iOS compatibile)
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      window.location.href = "dashboard.html";
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Errore login");
+  }
 
   // Se già loggato → vai dashboard
   onAuthStateChanged(auth, (user) => {
@@ -20,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loginBtn.onclick = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error(error);
       alert("Errore login");
