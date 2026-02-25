@@ -402,7 +402,8 @@ const months = generateContractMonths(
     const today = new Date();
     const currentMonthIndex = today.getMonth(); // 0-11
 
-  for (let m of months) {
+    let unpaidMonths = [];
+    for (let m of months) {
 
     const snap = await getDoc(doc(db, "payments", user.uid + "_" + m));
     const data = snap.exists() ? snap.data() : null;
