@@ -7,12 +7,13 @@ import {
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "...",
+  apiKey: "AIzaSyCo-RUqFOsQqHGsnXUkFVOjANqEFj6JTpg",
   authDomain: "affitto-manager.firebaseapp.com",
   projectId: "affitto-manager",
   storageBucket: "affitto-manager.firebasestorage.app",
-  messagingSenderId: "...",
-  appId: "..."
+  messagingSenderId: "961351310754",
+  appId: "1:961351310754:web:476e4e69f77adffb8766fb",
+  measurementId: "G-WNV2FXTS3E"
 };
 
 const app = initializeApp(firebaseConfig);
