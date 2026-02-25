@@ -20,12 +20,3 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-// 🔥 FORZIAMO PERSISTENZA LOCALE (FONDAMENTALE PER iOS PWA)
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Persistenza auth impostata su LOCAL");
-  })
-  .catch((error) => {
-    console.error("Errore persistenza:", error);
-  });
