@@ -9,7 +9,7 @@ const provider = new GoogleAuthProvider();
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔥 Questo è quello che realmente funziona su iOS
+  // 🔥 Stato auth globale
   onAuthStateChanged(auth, (user) => {
     if (user) {
       window.location.replace("dashboard.html");
@@ -19,12 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("googleLogin");
 
   loginBtn.addEventListener("click", async () => {
-    try {
-      await signInWithRedirect(auth, provider);
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Errore login");
-    }
+    await signInWithRedirect(auth, provider);
   });
 
 });
