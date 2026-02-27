@@ -9,19 +9,8 @@ import {
 
 const loginBtn = document.getElementById("googleLogin");
 
-// 🔥 RILEVA SE È PWA STANDALONE iOS
-function isInStandaloneMode() {
-  return window.navigator.standalone === true;
-}
-
+// Login con REDIRECT (compatibile iOS PWA)
 loginBtn.addEventListener("click", async () => {
-
-  // 🚨 SE È PWA → apri Safari vero
-  if (isInStandaloneMode()) {
-    window.location.href = window.location.origin;
-    return;
-  }
-
   try {
     await signInWithRedirect(auth, provider);
   } catch (error) {
@@ -29,7 +18,7 @@ loginBtn.addEventListener("click", async () => {
   }
 });
 
-// Gestione redirect
+// Gestione risultato redirect
 getRedirectResult(auth)
   .then((result) => {
     if (result?.user) {
@@ -37,7 +26,7 @@ getRedirectResult(auth)
     }
   })
   .catch((error) => {
-    console.error(error);
+    alert("Errore accesso Google: " + error.message);
   });
 
 // Se già autenticato
