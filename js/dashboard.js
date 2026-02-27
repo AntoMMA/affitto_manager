@@ -406,6 +406,8 @@ const months = generateContractMonths(
 
   for (let m of months) {
 
+    const safeKey = m.replace(/[^a-zA-Z0-9]/g, "_");
+
     const snap = await getDoc(doc(db, "payments", user.uid + "_" + m));
     const data = snap.exists() ? snap.data() : null;
 
@@ -473,13 +475,13 @@ else {
   <input type="file" id="file_${m}" style="margin-bottom:6px;">
   <button onclick="uploadPaymentDocument('${m}')">Carica Ricevuta</button>
 
-  <div id="docPreview_${m}" style="margin-top:8px;"></div>
+  <div id="docPreview_${safeKey}" style="margin-top:8px;"></div>
 `;
 
 // Mostra documento se esiste
 if (data?.paymentDocument) {
 
-  const preview = row.querySelector("#docPreview_" + m);
+  const preview = row.querySelector("#docPreview_" + safeKey);
 
   const link = document.createElement("a");
   link.href = data.paymentDocument.url;
