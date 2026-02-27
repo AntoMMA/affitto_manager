@@ -816,86 +816,117 @@ function renderPaymentsChart(totalPaid, totalContract) {
     paymentsChartInstance.destroy();
   }
 
-  const restante = Math.max(totalContract - totalPaid, 0);
-  const percent = totalContract > 0
-    ? Math.round((totalPaid / totalContract) * 100)
-    : 0;
+  const user = auth.currentUser;
+  if (!user) return;
 
-  // 🎨 Palette Dark Finanziaria
-  let mainColor = "#00f5a0"; // verde neon soft
-  if (percent < 100 && percent >= 50) mainColor = "#00c6ff"; // blu premium
-  if (percent < 50) mainColor = "#ff3d71"; // rosso elegante
+  const today = new Date();
+
+  // Recuperiamo mesi visibili dal DOM
+  const monthCards = document.querySelectorAll("#paymentsTable .card h4");
+
+  const labels = [];
+  const values = [];
+  const colors = [];
+
+  monthCards.forEach(card => {
+
+    const monthName = card.innerText;
+    if (monthName === "CAPARRA") return;
+
+    labels.push(monthName);
+    values.push(1);
+
+    const row = card.parentElement;
+
+    if (row.classList.contains("green")) {
+      colors.push("#00ff88"); // neon green
+    }
+    else if (row.classList.contains("orange")) {
+      colors.push("#ff9900"); // neon orange
+    }
+    else {
+      colors.push("#ff0033"); // neon red
+    }
+
+  });
 
   paymentsChartInstance = new Chart(ctx, {
-    type: 'doughnut',
+    type: 'bar',
     data: {
-      labels: ['Pagato', 'Restante'],
+      labels,
       datasets: [{
-        data: [totalPaid, restante],
-        backgroundColor: [
-          mainColor,
-          "rgba(255,255,255,0.06)"
-        ],
-        borderWidth: 0
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 8,
+        borderSkipped: false
       }]
     },
     options: {
-      cutout: "78%",
       responsive: true,
+      animation: {
+        duration: 1400,
+        easing: "easeOutQuart"
+      },
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
-          backgroundColor: "#0f0f0f",
-          borderColor: "#222",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#ccc",
-          padding: 12,
           callbacks: {
             label: function(context) {
-              return context.label + ": € " + context.raw;
+              return context.label;
             }
           }
         }
       },
-      animation: {
-        animateRotate: true,
-        duration: 1400,
-        easing: 'easeOutQuart'
+      scales: {
+        y: {
+          display: false
+        },
+        x: {
+          ticks: {
+            color: "#ccc",
+            maxRotation: 45,
+            minRotation: 45
+          },
+          grid: {
+            display: false
+          }
+        }
       }
     },
     plugins: [{
-      id: 'centerText',
-      beforeDraw(chart) {
+      id: "neonGlow",
+      afterDatasetsDraw(chart) {
 
-        const { width, height } = chart;
         const ctx = chart.ctx;
 
-        ctx.save();
+        chart.getDatasetMeta(0).data.forEach((bar, index) => {
 
-        // Glow effetto premium
-        ctx.shadowColor = mainColor;
-        ctx.shadowBlur = 20;
+          const color = colors[index];
 
-        ctx.font = "bold 36px sans-serif";
-        ctx.fillStyle = mainColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(percent + "%", width / 2, height / 2 - 10);
+          ctx.save();
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 25;
+          ctx.fillStyle = color;
 
-        ctx.shadowBlur = 0;
+          ctx.fillRect(
+            bar.x - bar.width / 2,
+            bar.y,
+            bar.width,
+            bar.base - bar.y
+          );
 
-        ctx.font = "14px sans-serif";
-        ctx.fillStyle = "#888";
-        ctx.fillText("Completamento", width / 2, height / 2 + 20);
-
-        ctx.restore();
+          ctx.restore();
+        });
       }
     }]
   });
 }
+
+setInterval(() => {
+  if (paymentsChartInstance) {
+    paymentsChartInstance.update();
+  }
+}, 1200);
 
 window.generatePDF = async function() {
 
