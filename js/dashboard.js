@@ -926,7 +926,7 @@ setInterval(() => {
   if (paymentsChartInstance) {
     paymentsChartInstance.update();
   }
-}, 1200);
+}, 100);
 
 window.generatePDF = async function() {
 
