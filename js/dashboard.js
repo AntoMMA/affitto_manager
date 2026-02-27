@@ -455,16 +455,60 @@ else {
 }
 
     row.innerHTML = `
-      <h4>${m}</h4>
-      <input type="number" placeholder="Importo" id="imp_${m}" value="${data?.amount || ""}">
-      <input type="text" placeholder="Note" id="note_${m}" value="${data?.note || ""}">
-      <select id="status_${m}">
-        <option value="non_pagato" ${data?.status==="non_pagato"?"selected":""}>Non Pagato</option>
-        <option value="in_arrivo" ${data?.status==="in_arrivo"?"selected":""}>In Arrivo</option>
-        <option value="pagato" ${data?.status==="pagato"?"selected":""}>Pagato</option>
-      </select>
-      <button onclick="savePayment('${m}')">Salva</button>
-    `;
+  <h4>${m}</h4>
+
+  <input type="number" placeholder="Importo" id="imp_${m}" value="${data?.amount || ""}">
+  <input type="text" placeholder="Note" id="note_${m}" value="${data?.note || ""}">
+
+  <select id="status_${m}">
+    <option value="non_pagato" ${data?.status==="non_pagato"?"selected":""}>Non Pagato</option>
+    <option value="in_arrivo" ${data?.status==="in_arrivo"?"selected":""}>In Arrivo</option>
+    <option value="pagato" ${data?.status==="pagato"?"selected":""}>Pagato</option>
+  </select>
+
+  <button onclick="savePayment('${m}')">Salva</button>
+
+  <hr style="margin:10px 0;opacity:0.2">
+
+  <input type="file" id="file_${m}" style="margin-bottom:6px;">
+  <button onclick="uploadPaymentDocument('${m}')">Carica Ricevuta</button>
+
+  <div id="docPreview_${m}" style="margin-top:8px;"></div>
+`;
+
+// Mostra documento se esiste
+if (data?.paymentDocument) {
+
+  const preview = row.querySelector("#docPreview_" + m);
+
+  const link = document.createElement("a");
+  link.href = data.paymentDocument.url;
+  link.target = "_blank";
+  link.style.color = "#00f5a0";
+  link.style.display = "block";
+  link.style.marginBottom = "5px";
+  link.innerText = "📄 " + data.paymentDocument.name;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.innerText = "🗑 Elimina Ricevuta";
+  deleteBtn.style.background = "rgba(255,0,0,0.3)";
+  deleteBtn.style.border = "none";
+  deleteBtn.style.padding = "5px 10px";
+  deleteBtn.style.borderRadius = "6px";
+  deleteBtn.style.cursor = "pointer";
+
+  deleteBtn.onclick = async () => {
+
+    await updateDoc(doc(db, "payments", `${user.uid}_${m}`), {
+      paymentDocument: null
+    });
+
+    loadPayments();
+  };
+
+  preview.appendChild(link);
+  preview.appendChild(deleteBtn);
+}
 
     container.appendChild(row);
   }
@@ -627,6 +671,49 @@ window.savePayment = async function(monthName) {
   updatedAt: serverTimestamp()
 });
 
+  loadPayments();
+};
+
+window.uploadPaymentDocument = async function(monthName) {
+
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const input = document.getElementById("file_" + monthName);
+
+  if (!input.files.length) {
+    alert("Seleziona un file");
+    return;
+  }
+
+  const file = input.files[0];
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "affitto_manager");
+  formData.append("folder", `affitto_manager/${user.uid}/payments`);
+
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/dzgynfn7t/image/upload",
+    { method: "POST", body: formData }
+  );
+
+  const dataUpload = await response.json();
+
+  if (!dataUpload.secure_url) {
+    alert("Errore upload");
+    return;
+  }
+
+  await updateDoc(doc(db, "payments", `${user.uid}_${monthName}`), {
+    paymentDocument: {
+      url: dataUpload.secure_url,
+      name: file.name,
+      type: file.type
+    }
+  });
+
+  alert("Ricevuta caricata!");
   loadPayments();
 };
 
