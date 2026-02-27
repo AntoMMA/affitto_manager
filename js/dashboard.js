@@ -341,22 +341,22 @@ function generateContractMonths(dataInizio, numeroMesi) {
 
 async function loadPayments() {
 
+  console.log("Carico pagamenti...");
+
   const container = document.getElementById("paymentsTable");
   const user = auth.currentUser;
   if (!user) return;
 
-  const paymentsSnap = await getDoc(doc(db, "payments", user.uid));
-  const paymentsData = paymentsSnap.exists() ? paymentsSnap.data() : {};
+  // Recuperiamo impostazioni contratto
+const contractSnap = await getDoc(doc(db, "contractSettings", user.uid));
+if (!contractSnap.exists()) return;
 
-  const contractSnap = await getDoc(doc(db, "contractSettings", user.uid));
-  if (!contractSnap.exists()) return;
+const contractData = contractSnap.data();
 
-  const contractData = contractSnap.data();
-
-  const months = generateContractMonths(
-    contractData.dataInizio,
-    contractData.numeroMesi
-  );
+const months = generateContractMonths(
+  contractData.dataInizio,
+  contractData.numeroMesi
+);
 
   container.innerHTML = "";
 
@@ -404,7 +404,8 @@ async function loadPayments() {
 
   for (let m of months) {
 
-    const data = paymentsData[m] || null;
+    const snap = await getDoc(doc(db, "payments", user.uid + "_" + m));
+    const data = snap.exists() ? snap.data() : null;
 
     const row = document.createElement("div");
     row.classList.add("card");
@@ -611,23 +612,18 @@ window.savePayment = async function(monthName) {
   const user = auth.currentUser;
   if (!user) return;
 
-  const amount = Number(document.getElementById("imp_" + monthName).value || 0);
+  const amount = document.getElementById("imp_" + monthName).value;
   const note = document.getElementById("note_" + monthName).value;
   const status = document.getElementById("status_" + monthName).value;
 
-  const docRef = doc(db, "payments", user.uid);
-
-  const snap = await getDoc(docRef);
-  let existingData = snap.exists() ? snap.data() : {};
-
-  existingData[monthName] = {
-    amount,
-    note,
-    status,
-    updatedAt: serverTimestamp()
-  };
-
-  await setDoc(docRef, existingData);
+  await setDoc(doc(db, "payments", `${user.uid}_${monthName}`), {
+  uid: user.uid,
+  month: monthName,
+  amount: Number(amount || 0),
+  note,
+  status,
+  updatedAt: serverTimestamp()
+});
 
   loadPayments();
 };
@@ -1011,5 +1007,4 @@ docPdf.text(clausolaLines, 105, startY, {
 });
 
   docPdf.save("Stato_Attuale_Contratto_Antonio_Passafiume.pdf");
-
 };
