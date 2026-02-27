@@ -469,6 +469,8 @@ else {
     container.appendChild(row);
   }
 
+  renderMonthlyStatusChart(months);
+
   await updateDashboardStats(totalPaid, mesiPagati, mesiDaPagare);
 }
 
@@ -524,6 +526,52 @@ async function updateDashboardStats(totalPaid, mesiPagati = 0, mesiDaPagare = 0)
     : 0;
 
     renderPaymentsChart(totalPaid, totalContract);
+
+    function renderMonthlyStatusChart(months) {
+
+  const container = document.getElementById("paymentsChart").parentElement;
+
+  let existing = document.getElementById("monthlyStatus");
+  if (existing) existing.remove();
+
+  const wrapper = document.createElement("div");
+  wrapper.id = "monthlyStatus";
+  wrapper.style.display = "flex";
+  wrapper.style.flexWrap = "wrap";
+  wrapper.style.gap = "8px";
+  wrapper.style.marginTop = "20px";
+  wrapper.style.justifyContent = "center";
+
+  months.forEach(m => {
+
+    const card = document.createElement("div");
+    card.innerText = m.split(" ")[0]; // solo nome mese
+    card.style.padding = "8px 12px";
+    card.style.borderRadius = "8px";
+    card.style.fontSize = "12px";
+    card.style.fontWeight = "bold";
+
+    const monthRow = Array.from(document.querySelectorAll("#paymentsTable h4"))
+      .find(el => el.innerText === m)?.parentElement;
+
+    if (monthRow?.classList.contains("green")) {
+      card.style.background = "#00ff88";
+      card.style.boxShadow = "0 0 15px #00ff88";
+    }
+    else if (monthRow?.classList.contains("orange")) {
+      card.style.background = "#ff9900";
+      card.style.boxShadow = "0 0 15px #ff9900";
+    }
+    else {
+      card.style.background = "#ff0033";
+      card.style.boxShadow = "0 0 15px #ff0033";
+    }
+
+    wrapper.appendChild(card);
+  });
+
+  container.appendChild(wrapper);
+}
 
   // 🔥 LOGICA STATO
   let statoScadenza = "";
@@ -809,20 +857,21 @@ let paymentsChartInstance = null;
 
 function renderPaymentsChart(totalPaid, totalContract) {
 
-  const ctx = document.getElementById("paymentsChart");
-  if (!ctx) return;
+  const canvas = document.getElementById("paymentsChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
 
   if (paymentsChartInstance) {
     paymentsChartInstance.destroy();
   }
 
+  const restante = Math.max(totalContract - totalPaid, 0);
   const percent = totalContract > 0
     ? Math.round((totalPaid / totalContract) * 100)
     : 0;
 
-  const restante = Math.max(totalContract - totalPaid, 0);
-
-  let mainColor = "#00f5a0"; // verde neon soft
+  let mainColor = "#00ff88";
   if (percent < 100 && percent >= 50) mainColor = "#00c6ff";
   if (percent < 50) mainColor = "#ff3d71";
 
@@ -834,27 +883,25 @@ function renderPaymentsChart(totalPaid, totalContract) {
         data: [totalPaid, restante],
         backgroundColor: [
           mainColor,
-          "rgba(255,255,255,0.05)"
+          "rgba(255,255,255,0.04)"
         ],
         borderWidth: 0
       }]
     },
     options: {
-      cutout: "78%",
+      cutout: "80%",
       responsive: true,
       animation: {
         animateRotate: true,
-        duration: 120,
+        duration: 1400,
         easing: 'easeOutQuart'
       },
       plugins: {
-        legend: {
-          display: false
-        }
+        legend: { display: false }
       }
     },
     plugins: [{
-      id: 'centerText',
+      id: 'centerTextNeon',
       beforeDraw(chart) {
 
         const { width, height } = chart;
@@ -863,27 +910,39 @@ function renderPaymentsChart(totalPaid, totalContract) {
         ctx.save();
 
         ctx.shadowColor = mainColor;
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 35;
 
-        ctx.font = "bold 36px sans-serif";
+        ctx.font = "bold 40px sans-serif";
         ctx.fillStyle = mainColor;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(percent + "%", width / 2, height / 2 - 8);
+        ctx.fillText(percent + "%", width / 2, height / 2 - 10);
 
         ctx.shadowBlur = 0;
 
-        ctx.font = "13px sans-serif";
-        ctx.fillStyle = "#888";
-        ctx.fillText("Completamento", width / 2, height / 2 + 20);
+        ctx.font = "14px sans-serif";
+        ctx.fillStyle = "#aaa";
+        ctx.fillText("Stato Contratto", width / 2, height / 2 + 22);
 
         ctx.restore();
       }
     }]
   });
 
-  // Glow statico elegante (NO interval)
-  ctx.style.filter = `drop-shadow(0 0 15px ${mainColor})`;
+  // Neon pulsante AUTOMATICO
+  let glow = 25;
+  let direction = 1;
+
+  setInterval(() => {
+
+    glow += direction * 2;
+
+    if (glow > 45) direction = -1;
+    if (glow < 20) direction = 1;
+
+    canvas.style.filter = `drop-shadow(0 0 ${glow}px ${mainColor})`;
+
+  }, 80);
 }
 
 window.generatePDF = async function() {
