@@ -362,3 +362,14 @@ img {
 .pdf-btn:hover {
   box-shadow: 0 0 25px rgba(0,255,255,0.6);
 }
+
+@keyframes neonVibrate {
+  0% { box-shadow: 0 0 10px red; }
+  50% { box-shadow: 0 0 30px red; }
+  100% { box-shadow: 0 0 10px red; }
+}
+
+#premiumProgressWrapper {
+  border: 1px solid rgba(0,255,255,0.2);
+  box-shadow: 0 0 20px rgba(0,255,255,0.08);
+}
