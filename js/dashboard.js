@@ -297,9 +297,11 @@ function updateSectionCounter(sectionKey, count) {
 
   headers.forEach(header => {
 
-    if (header.innerText.toLowerCase().includes(sectionKey.toLowerCase())) {
-      header.innerText = header.innerText.split("(")[0].trim();
-      header.innerText += ` (${count})`;
+    const section = header.dataset.section;
+
+    if (section === sectionKey) {
+      const cleanTitle = header.innerText.split("(")[0].trim();
+      header.innerText = `${cleanTitle} (${count})`;
     }
   });
 }
