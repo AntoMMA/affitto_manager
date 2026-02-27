@@ -816,117 +816,75 @@ function renderPaymentsChart(totalPaid, totalContract) {
     paymentsChartInstance.destroy();
   }
 
-  const user = auth.currentUser;
-  if (!user) return;
+  const percent = totalContract > 0
+    ? Math.round((totalPaid / totalContract) * 100)
+    : 0;
 
-  const today = new Date();
+  const restante = Math.max(totalContract - totalPaid, 0);
 
-  // Recuperiamo mesi visibili dal DOM
-  const monthCards = document.querySelectorAll("#paymentsTable .card h4");
-
-  const labels = [];
-  const values = [];
-  const colors = [];
-
-  monthCards.forEach(card => {
-
-    const monthName = card.innerText;
-    if (monthName === "CAPARRA") return;
-
-    labels.push(monthName);
-    values.push(1);
-
-    const row = card.parentElement;
-
-    if (row.classList.contains("green")) {
-      colors.push("#00ff88"); // neon green
-    }
-    else if (row.classList.contains("orange")) {
-      colors.push("#ff9900"); // neon orange
-    }
-    else {
-      colors.push("#ff0033"); // neon red
-    }
-
-  });
+  let mainColor = "#00f5a0"; // verde neon soft
+  if (percent < 100 && percent >= 50) mainColor = "#00c6ff";
+  if (percent < 50) mainColor = "#ff3d71";
 
   paymentsChartInstance = new Chart(ctx, {
-    type: 'bar',
+    type: 'doughnut',
     data: {
-      labels,
+      labels: ['Pagato', 'Restante'],
       datasets: [{
-        data: values,
-        backgroundColor: colors,
-        borderRadius: 8,
-        borderSkipped: false
+        data: [totalPaid, restante],
+        backgroundColor: [
+          mainColor,
+          "rgba(255,255,255,0.05)"
+        ],
+        borderWidth: 0
       }]
     },
     options: {
+      cutout: "78%",
       responsive: true,
       animation: {
-        duration: 1400,
-        easing: "easeOutQuart"
+        animateRotate: true,
+        duration: 120,
+        easing: 'easeOutQuart'
       },
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              return context.label;
-            }
-          }
-        }
-      },
-      scales: {
-        y: {
+        legend: {
           display: false
-        },
-        x: {
-          ticks: {
-            color: "#ccc",
-            maxRotation: 45,
-            minRotation: 45
-          },
-          grid: {
-            display: false
-          }
         }
       }
     },
     plugins: [{
-      id: "neonGlow",
-      afterDatasetsDraw(chart) {
+      id: 'centerText',
+      beforeDraw(chart) {
 
+        const { width, height } = chart;
         const ctx = chart.ctx;
 
-        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+        ctx.save();
 
-          const color = colors[index];
+        ctx.shadowColor = mainColor;
+        ctx.shadowBlur = 18;
 
-          ctx.save();
-          ctx.shadowColor = color;
-          ctx.shadowBlur = 25;
-          ctx.fillStyle = color;
+        ctx.font = "bold 36px sans-serif";
+        ctx.fillStyle = mainColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(percent + "%", width / 2, height / 2 - 8);
 
-          ctx.fillRect(
-            bar.x - bar.width / 2,
-            bar.y,
-            bar.width,
-            bar.base - bar.y
-          );
+        ctx.shadowBlur = 0;
 
-          ctx.restore();
-        });
+        ctx.font = "13px sans-serif";
+        ctx.fillStyle = "#888";
+        ctx.fillText("Completamento", width / 2, height / 2 + 20);
+
+        ctx.restore();
       }
     }]
   });
-}
 
-setInterval(() => {
-  if (paymentsChartInstance) {
-    paymentsChartInstance.update();
-  }
-}, 100);
+  // Glow statico elegante (NO interval)
+  ctx.style.filter = `drop-shadow(0 0 15px ${mainColor})`;
+}
 
 window.generatePDF = async function() {
 
