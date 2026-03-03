@@ -320,8 +320,8 @@ function generateContractMonths(dataInizio, numeroMesi) {
   if (!dataInizio || !numeroMesi) return [];
 
   const mesiItaliani = [
-    "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
-    "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
+    "5 Gennaio","5 Febbraio","5 Marzo","5 Aprile","5 Maggio","5 Giugno",
+    "5 Luglio","5 Agosto","5 Settembre","5 Ottobre","5 Novembre","5 Dicembre"
   ];
 
   const startDate = new Date(dataInizio);
@@ -419,8 +419,8 @@ const meseNome = monthDateParts[0];
 const annoNumero = parseInt(monthDateParts[1]);
 
 const mesiItaliani = [
-  "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
-  "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
+  "5 Gennaio","5 Febbraio","5 Marzo","5 Aprile","5 Maggio","5 Giugno",
+  "5 Luglio","5 Agosto","5 Settembre","5 Ottobre","5 Novembre","5 Dicembre"
 ];
 
 const monthIndex = mesiItaliani.indexOf(meseNome);
@@ -1099,3 +1099,4 @@ docPdf.text(clausolaLines, 105, startY, {
 
   docPdf.save("Stato_Attuale_Contratto_Antonio_Passafiume.pdf");
 };
+
