@@ -218,9 +218,9 @@ img {
 }
 
 .collapsible.active .card-body {
-  max-height: 2500px;
+  max-height: fit-content;
   opacity: 1;
-  margin-top: 15px;
+  margin-top: 0px;
 }
 
 .card-header {
