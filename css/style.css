@@ -6,7 +6,7 @@ body.dark {
   margin: 0;
   background: radial-gradient(circle at top left, #0e0e10, #050507 70%);
   font-family: 'Segoe UI', sans-serif;
-  color: white;
+  color: #ffd558;
 }
 
 /* ===========================
